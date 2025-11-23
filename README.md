@@ -1,16 +1,23 @@
-# notebook
+# TH Notebook – Flutter + Firebase Firestore
 
-A new Flutter project.
+Ứng dụng ghi chú siêu sạch, realtime, lưu trữ đám mây  
+Full CRUD · Clean code · Giao diện tối giản · Comment tiếng Việt đầy đủ
 
-## Getting Started
+![Flutter](https://img.shields.io/badge/Flutter-02569B?logo=flutter&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black)
+![Dart](https://img.shields.io/badge/Dart-0175C2?logo=dart&logoColor=white)
+![License](https://img.shields.io/github/license/HuyQuocNewBie/flutter-notebook-firebase)
 
-This project is a starting point for a Flutter application.
+## Tính năng
+- Tạo / Sửa / Xóa ghi chú
+- Đồng bộ realtime với Firebase Firestore
+- Không lưu local → xóa app vẫn còn dữ liệu
+- Hiển thị ngày đẹp: Hôm nay, Hôm qua, dd/MM/yyyy
 
-A few resources to get you started if this is your first Flutter project:
+## Công nghệ
+- Flutter 3.x
+- Firebase Firestore
+- UUID, Intl
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Project cá nhân / đồ án / portfolio  
+Made with love by HuyQuocNewBie
