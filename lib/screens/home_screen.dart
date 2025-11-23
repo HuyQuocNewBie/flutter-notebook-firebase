@@ -8,6 +8,8 @@ import '../widgets/note_card.dart';
 import '../widgets/empty_state.dart';
 import 'note_edit_screen.dart';
 
+/// Màn hình chính hiển thị danh sách ghi chú
+/// Tính năng: Tìm kiếm, sắp xếp yêu thích lên đầu, hiển thị dạng lưới đẹp như Google Keep
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -16,12 +18,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // Controller để lấy nội dung ô tìm kiếm
   final TextEditingController _searchController = TextEditingController();
+  // Từ khóa tìm kiếm (chuyển thành chữ thường để tìm không phân biệt hoa/thường)
   String _searchQuery = '';
 
   @override
   void dispose() {
-    _searchController.dispose();
+    _searchController.dispose(); // Giải phóng bộ nhớ
     super.dispose();
   }
 
@@ -29,6 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
+      
+      // Thanh tiêu đề ứng dụng
       appBar: AppBar(
         title: const Text(
           'Ghi chú của tôi',
@@ -39,9 +45,11 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
       ),
+
+      // Nội dung chính
       body: Column(
         children: [
-          // Search bar
+          // Ô tìm kiếm ghi chú
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
@@ -69,18 +77,19 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Danh sách ghi chú
+          // Danh sách ghi chú lấy realtime từ Firebase Firestore
           Expanded(
             child: StreamBuilder<List<Note>>(
-              stream: FirebaseService.getNotes(),
+              stream: FirebaseService.getNotes(), // Lắng nghe dữ liệu realtime
               builder: (context, snapshot) {
+                // Đang tải dữ liệu
                 if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
                 var notes = snapshot.data!;
 
-                // Lọc tìm kiếm
+                // Lọc theo từ khóa tìm kiếm
                 if (_searchQuery.isNotEmpty) {
                   notes = notes.where((note) {
                     return note.title.toLowerCase().contains(_searchQuery) ||
@@ -88,17 +97,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   }).toList();
                 }
 
-                // Sắp xếp: Favorite lên đầu, mới nhất trước
+                // Sắp xếp: Ghi chú yêu thích lên đầu, mới nhất trước
                 notes.sort((a, b) {
                   if (a.isFavorite && !b.isFavorite) return -1;
                   if (!a.isFavorite && b.isFavorite) return 1;
                   return b.createdAt.compareTo(a.createdAt);
                 });
 
+                // Không có ghi chú nào
                 if (notes.isEmpty) {
                   return const EmptyState();
                 }
 
+                // Hiển thị dạng lưới 2 cột (giống Google Keep)
                 return GridView.builder(
                   padding: const EdgeInsets.all(12),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -126,6 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
 
+      // Nút tạo ghi chú mới (nổi giữa dưới cùng)
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           final newNote = Note(

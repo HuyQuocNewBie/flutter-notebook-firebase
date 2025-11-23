@@ -1,14 +1,19 @@
-// lib/widgets/note_card.dart
 import 'package:flutter/material.dart';
 import '../core/constants/app_colors.dart';
 import '../core/utils/date_helper.dart';
 import '../data/firebase_service.dart';
 import '../models/note.dart';
 
+/// Widget hiển thị một ghi chú dưới dạng thẻ (card)
+/// Tính năng:
+/// - Hiển thị tiêu đề, nội dung, ngày tạo
+/// - Hiển thị ngôi sao nếu là yêu thích
+/// - Đổi màu nền theo lựa chọn người dùng
+/// - Long press → hiện menu: Yêu thích / Đổi màu / Xóa
 class NoteCard extends StatelessWidget {
   final Note note;
-  final VoidCallback onTap;
-  final VoidCallback onDelete;
+  final VoidCallback onTap;     // Khi bấm vào card → mở màn hình sửa
+  final VoidCallback onDelete;  // Khi chọn xóa
 
   const NoteCard({
     super.key,
@@ -21,11 +26,11 @@ class NoteCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      onLongPress: () => _showOptions(context),
+      onLongPress: () => _showOptions(context), // Nhấn giữ lâu → hiện menu tùy chọn
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Color(int.parse(note.color)),
+          color: Color(int.parse(note.color)), // Màu nền do người dùng chọn
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -38,32 +43,48 @@ class NoteCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Hiển thị ngôi sao nếu là ghi chú yêu thích
             Row(
               children: [
                 if (note.isFavorite)
                   const Icon(Icons.star, color: Colors.amber, size: 20),
                 const Spacer(),
-                if (note.isFavorite) const SizedBox(width: 8),
               ],
             ),
             const SizedBox(height: 8),
+
+            // Tiêu đề ghi chú
             Text(
               note.title.isEmpty ? '(Không có tiêu đề)' : note.title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 8),
+
+            // Nội dung ghi chú (rút gọn)
             Text(
               note.content.isEmpty ? 'Không có nội dung' : note.content,
-              style: TextStyle(color: Colors.black.withOpacity(0.7)),
+              style: TextStyle(
+                color: Colors.black.withOpacity(0.7),
+                fontSize: 14,
+              ),
               maxLines: 4,
               overflow: TextOverflow.ellipsis,
             ),
+
             const Spacer(),
+
+            // Ngày tạo (được format đẹp nhờ DateHelper)
             Text(
               DateHelper.format(note.createdAt),
-              style: TextStyle(color: Colors.black.withOpacity(0.6), fontSize: 12),
+              style: TextStyle(
+                color: Colors.black.withOpacity(0.6),
+                fontSize: 12,
+              ),
             ),
           ],
         ),
@@ -71,6 +92,7 @@ class NoteCard extends StatelessWidget {
     );
   }
 
+  /// Hiện menu khi nhấn giữ lâu vào card
   void _showOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -78,14 +100,19 @@ class NoteCard extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Nút thêm/bỏ yêu thích
             ListTile(
               leading: Icon(note.isFavorite ? Icons.star : Icons.star_border),
               title: Text(note.isFavorite ? 'Bỏ yêu thích' : 'Thêm vào yêu thích'),
               onTap: () {
-                FirebaseService.updateNote(note.copyWith(isFavorite: !note.isFavorite));
+                FirebaseService.updateNote(
+                  note.copyWith(isFavorite: !note.isFavorite),
+                );
                 Navigator.pop(ctx);
               },
             ),
+
+            // Nút đổi màu nền
             ListTile(
               leading: const Icon(Icons.palette),
               title: const Text('Đổi màu'),
@@ -94,6 +121,8 @@ class NoteCard extends StatelessWidget {
                 _showColorPicker(context);
               },
             ),
+
+            // Nút xóa ghi chú
             ListTile(
               leading: const Icon(Icons.delete, color: Colors.red),
               title: const Text('Xóa', style: TextStyle(color: Colors.red)),
@@ -108,6 +137,7 @@ class NoteCard extends StatelessWidget {
     );
   }
 
+  /// Hiển thị bảng chọn màu
   void _showColorPicker(BuildContext context) {
     showDialog(
       context: context,
@@ -142,7 +172,7 @@ class NoteCard extends StatelessWidget {
   }
 }
 
-// Extension để copy note dễ hơn
+/// Extension giúp copy và cập nhật một phần thuộc tính của Note dễ dàng
 extension NoteCopy on Note {
   Note copyWith({
     String? title,

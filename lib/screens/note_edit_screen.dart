@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../data/firebase_service.dart';
 import '../models/note.dart';
 
+/// Màn hình tạo/sửa ghi chú
+/// Tính năng: Tự động focus tiêu đề khi tạo mới, nút lưu, nút xóa có xác nhận
 class NoteEditScreen extends StatefulWidget {
   final Note note;
   const NoteEditScreen({super.key, required this.note});
@@ -13,7 +15,7 @@ class NoteEditScreen extends StatefulWidget {
 class _NoteEditScreenState extends State<NoteEditScreen> {
   late TextEditingController _titleController;
   late TextEditingController _contentController;
-  bool _isNewNote = false;
+  bool _isNewNote = false; // Kiểm tra xem là tạo mới hay đang sửa
 
   @override
   void initState() {
@@ -42,6 +44,7 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
+          // Nút xóa (chỉ hiện khi đang sửa, không hiện khi tạo mới)
           if (!_isNewNote)
             IconButton(
               icon: const Icon(Icons.delete, color: Colors.red),
@@ -53,7 +56,10 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
                     content: const Text('Hành động này không thể hoàn tác.'),
                     actions: [
                       TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Hủy')),
-                      TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Xóa', style: TextStyle(color: Colors.red))),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: const Text('Xóa', style: TextStyle(color: Colors.red)),
+                      ),
                     ],
                   ),
                 );
@@ -63,6 +69,7 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
                 }
               },
             ),
+          // Nút lưu
           IconButton(
             icon: const Icon(Icons.save_outlined, color: Colors.blue),
             onPressed: () async {
@@ -88,6 +95,7 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
+            // Ô nhập tiêu đề
             TextField(
               controller: _titleController,
               decoration: const InputDecoration(
@@ -96,8 +104,9 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
                 hintStyle: TextStyle(fontSize: 28, color: Colors.grey),
               ),
               style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
-              autofocus: _isNewNote,
+              autofocus: _isNewNote, // Tự động focus khi tạo mới
             ),
+            // Ô nhập nội dung
             Expanded(
               child: TextField(
                 controller: _contentController,
